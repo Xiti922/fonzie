@@ -11,7 +11,7 @@ replace github.com/keybase/go-keychain => github.com/99designs/go-keychain v0.0.
 require (
 	cloud.google.com/go/firestore v1.6.1
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/bwmarrin/discordgo v0.25.0
+	github.com/bwmarrin/discordgo v0.26.1
 	github.com/cosmos/btcutil v1.0.4
 	github.com/cosmos/cosmos-sdk v0.45.4
 	github.com/go-resty/resty/v2 v2.7.0
