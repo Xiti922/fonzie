@@ -52,11 +52,14 @@ func (chain *Chain) getClient() *customlens.CustomChainClient {
 		if err != nil {
 			log.Fatalf("failed to get chain id for %s. err: %v", chain.Prefix, err)
 		}
+		log.Infof("chain id for %s is %s", chain.Prefix, chainID)
+
 		// calculate gas adjustment from env
 		gasAdjustment, err := strconv.ParseFloat(os.Getenv("GAS_ADJUSTMENT"), 64)
 		if err != nil {
 			gasAdjustment = 1.5
 		}
+		log.Infof("gas adjustment is %f", gasAdjustment)
 
 		// Build chain config
 		chainConfig := lens.ChainClientConfig{

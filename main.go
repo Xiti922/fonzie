@@ -368,6 +368,11 @@ func (fh FaucetHandler) handleDispense(s *discordgo.Session, m *discordgo.Messag
 }
 
 func reportError(s *discordgo.Session, m *discordgo.MessageCreate, errToReport error) {
+	if s == nil || m == nil {
+		// if no session or message, plainly log the error
+		log.Error(errToReport)
+		return
+	}
 	if m.Author.Bot {
 		// guard against known bots
 		return
