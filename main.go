@@ -45,6 +45,7 @@ var (
 	rawFunding         = os.Getenv("FUNDING")
 	rawFundingInterval = os.Getenv("FUNDING_INTERVAL")
 	isSilent           = os.Getenv("SILENT") != ""
+	isDebug            = os.Getenv("DEBUG") != ""
 	funding            ChainFunding
 	fundingInterval    time.Duration
 	pruneMode          = false
@@ -87,6 +88,9 @@ func init() {
 	}
 	if rawFunding == "" {
 		log.Fatal("FUNDING cannot be blank (json array)")
+	}
+	if isDebug {
+		log.Info("DEBUG mode enabled")
 	}
 	if rawFundingInterval == "" {
 		fundingInterval = time.Hour * 12
@@ -208,6 +212,16 @@ func NewFaucetHandler(chains chain.Chains, db db.Db) FaucetHandler {
 }
 
 func (fh FaucetHandler) faucetHttp(w http.ResponseWriter, r *http.Request) {
+	// only handle GET requests
+	if r.Method != "GET" && r.URL.Path != "/" {
+		if isDebug {
+			log.Printf("DEBUG: received non-usable request: %#v", r)
+		}
+		return
+	}
+	if isDebug {
+		log.Printf("DEBUG: HTTP request: %#v", r)
+	}
 	query := r.URL.Query()
 	if !query.Has("wallet") {
 		httpError(w, "wallet is required")
@@ -238,11 +252,17 @@ func (fh FaucetHandler) faucetHttp(w http.ResponseWriter, r *http.Request) {
 
 	log.Infof("request from %s", r.RemoteAddr)
 	receipt, err := fh.db.GetFundingReceiptByUsernameAndChainPrefix(fh.ctx, wallet, prefix)
+	if isDebug {
+		log.Infof("DEBUG: after funding receipt %v", receipt)
+	}
 	if err != nil {
 		httpError(w, err.Error())
 		return
 	}
 
+	if isDebug {
+		log.Infof("DEBUG: wallet is %s", wallet)
+	}
 	if receipt != nil {
 		log.Infof("FETCHED RECEIPT RESULT: %#v", receipt.FundedAt.Add(fundingInterval).After(time.Now()))
 	}
@@ -253,12 +273,18 @@ func (fh FaucetHandler) faucetHttp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recipient, err := faucet.chain.DecodeAddr(wallet)
+	if isDebug {
+		log.Infof("DEBUG: recepient:  %s", recipient)
+	}
 	if err != nil {
 		httpError(w, "malformed destination address: "+err.Error())
 		return
 	}
 
 	faucet.channel <- FaucetReq{recipient, coins, fees, nil, nil}
+	if isDebug {
+		log.Infof("DEBUG: after faucetreq:  %s", recipient)
+	}
 	err = fh.db.SaveFundingReceipt(fh.ctx, db.FundingReceipt{
 		ChainPrefix: prefix,
 		Username:    wallet,
@@ -273,6 +299,9 @@ func (fh FaucetHandler) faucetHttp(w http.ResponseWriter, r *http.Request) {
 }
 
 func httpError(w http.ResponseWriter, err string) {
+	if isDebug {
+		log.Infof("DEBUG httpError:  %s", err)
+	}
 	w.Header().Set("x-faucet-error", err)
 	log.Errorf(err)
 	defer w.WriteHeader(http.StatusBadRequest)
