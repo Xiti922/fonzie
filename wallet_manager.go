@@ -83,9 +83,14 @@ func (cf ChainFaucet) processRequests(rs []FaucetReq) {
 		}
 	} else {
 		for _, r := range rs {
+			if isDebug {
+				log.Infof("DEBUG: %s worker processed request, req: %v", cf.chain.Prefix, r)
+			}
 			// Everything worked, so-- respond successfully to Discord requester
-			sendReaction(r.session, r.msg, "✅")
-			sendMessage(r.session, r.msg, fmt.Sprintf("Dispensed 💸 `%s` to `%s`", r.Coins, r.Recipient))
+			if (r.session != nil) && (r.msg != nil) {
+				sendReaction(r.session, r.msg, "✅")
+				sendMessage(r.session, r.msg, fmt.Sprintf("Dispensed 💸 `%s` to `%s`", r.Coins, r.Recipient))
+			}
 		}
 	}
 }
