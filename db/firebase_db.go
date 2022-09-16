@@ -86,6 +86,10 @@ func initFirestore(ctx context.Context) (*firestore.Client, error) {
 }
 
 func (db Db) SaveFundingReceipt(ctx context.Context, newReceipt FundingReceipt) error {
+	if os.Getenv("DEBUG") != "" {
+		// don't accumulate receipts in debug mode
+		return nil
+	}
 	table := db.firestore.Collection("funding-receipts")
 	ref := table.Doc(mkPKEY(newReceipt.Username, newReceipt.ChainPrefix))
 
@@ -128,6 +132,11 @@ func (db Db) PruneExpiredReceipts(ctx context.Context, beforeFundingTime time.Ti
 }
 
 func (db Db) GetFundingReceiptByUsernameAndChainPrefix(ctx context.Context, username string, chainPrefix string) (*FundingReceipt, error) {
+	if os.Getenv("DEBUG") != "" {
+		// allow unlimited faucet tapping in debug mode
+		return nil, nil
+	}
+
 	table := db.firestore.Collection("funding-receipts")
 	ref := table.Doc(mkPKEY(username, chainPrefix))
 
