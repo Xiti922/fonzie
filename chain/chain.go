@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 
 	cosmostypes "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -51,6 +52,11 @@ func (chain *Chain) getClient() *customlens.CustomChainClient {
 		if err != nil {
 			log.Fatalf("failed to get chain id for %s. err: %v", chain.Prefix, err)
 		}
+		// calculate gas adjustment from env
+		gasAdjustment, err := strconv.ParseFloat(os.Getenv("GAS_ADJUSTMENT"), 64)
+		if err != nil {
+			gasAdjustment = 1.5
+		}
 
 		// Build chain config
 		chainConfig := lens.ChainClientConfig{
@@ -59,7 +65,7 @@ func (chain *Chain) getClient() *customlens.CustomChainClient {
 			RPCAddr:        chain.RPC,
 			AccountPrefix:  chain.Prefix,
 			KeyringBackend: "memory",
-			GasAdjustment:  1.5,
+			GasAdjustment:  gasAdjustment,
 			Debug:          true,
 			Timeout:        "5s",
 			OutputFormat:   "json",
