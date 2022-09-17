@@ -46,6 +46,9 @@ func (cf ChainFaucet) Consume(quit chan bool) {
 			if len(rs) > 160 {
 				cf.processRequests(rs)
 				rs = make([]FaucetReq, 0)
+				if isDebug {
+					log.Infof("DEBUG: %s worker processed request, req: %v", cf.chain.Prefix, r)
+				}
 				t.Reset(interval)
 			} else {
 				log.Infof("%s worker waiting for more requests, %v", cf.chain.Prefix, r)
