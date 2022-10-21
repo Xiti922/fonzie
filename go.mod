@@ -1,4 +1,4 @@
-module github.com/umee-network/fonzie
+module github.com/xiti922/fonzie
 
 go 1.18
 
