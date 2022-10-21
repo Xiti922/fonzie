@@ -18,9 +18,9 @@ import (
 	"github.com/cosmos/btcutil/bech32"
 	cosmostypes "github.com/cosmos/cosmos-sdk/types"
 	log "github.com/sirupsen/logrus"
-	"github.com/umee-network/fonzie/chain"
-	"github.com/umee-network/fonzie/customlens"
-	"github.com/umee-network/fonzie/db"
+	"github.com/umee-network/xiti922/chain"
+	"github.com/umee-network/xiti922/customlens"
+	"github.com/umee-network/xiti922/db"
 )
 
 //go:generate bash -c "if [ \"$CI\" = true ] ; then echo -n $GITHUB_REF_NAME > VERSION; fi"
