@@ -11,7 +11,7 @@ import (
 	resty "github.com/go-resty/resty/v2"
 	log "github.com/sirupsen/logrus"
 	lens "github.com/strangelove-ventures/lens/client"
-	"github.com/umee-network/fonzie/customlens"
+	"github.com/xiti922/fonzie/customlens"
 )
 
 type Chains []*Chain
