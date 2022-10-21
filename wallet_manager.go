@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/umee-network/fonzie/chain"
+	"github.com/xiti922/fonzie/chain"
 )
 
 /*
